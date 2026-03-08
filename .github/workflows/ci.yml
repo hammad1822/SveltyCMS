@@ -113,7 +113,7 @@ jobs:
         env:
           TEST_MODE: true
           NODE_ENV: test
-        run: bunx vitest run --config vitest.config.ts
+        run: bunx vitest run
 
 
   build:
