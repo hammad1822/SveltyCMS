@@ -32,42 +32,89 @@ jobs:
   #     - name: Perform CodeQL Analysis
   #       uses: github/codeql-action/analyze@v4
 
+  # unit-tests:
+  #   name: ⚡ Unit Tests
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v6
+  #     - uses: oven-sh/setup-bun@v2
+  #       with:
+  #         bun-version: 1.1.29
+  #     - name: Install dependencies
+  #       run: bun install --frozen-lockfile
+  #     - name: Sync SvelteKit
+  #       run: |
+  #         bun x svelte-kit sync
+  #         # Ensure generated types are fresh
+  #         rm -rf .svelte-kit/types
+  #         bun x svelte-kit sync
+  #     - name: Compile Paraglide
+  #       run: bun run paraglide
+  #     - name: Generate Config Stubs
+  #       run: |
+  #         mkdir -p config
+  #         echo "export const privateEnv: any = {
+  #           DB_TYPE: process.env.DB_TYPE || '',
+  #           DB_HOST: process.env.DB_HOST || '127.0.0.1',
+  #           DB_PORT: process.env.DB_PORT || (process.env.DB_TYPE === 'mongodb' ? '27017' : process.env.DB_TYPE === 'mariadb' ? '3306' : '5432'),
+  #           DB_NAME: process.env.DB_NAME || 'sveltycms_test',
+  #           DB_USER: process.env.DB_USER || 'test',
+  #           DB_PASSWORD: process.env.DB_PASSWORD || 'test'
+  #         }" > config/private.test.ts
+  #     - name: Run Linter
+  #       run: bun run lint
+  #     - name: Run Type Check
+  #       run: bun run check
+  #     - name: Run Unit Tests
+  #       env:
+  #         TEST_MODE: true
+  #         NODE_ENV: test
+  #       run: bun run test:unit
+  
   unit-tests:
     name: ⚡ Unit Tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
+
       - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
       - name: Install dependencies
         run: bun install --frozen-lockfile
-      - name: Sync SvelteKit
+
+      - name: Sync SvelteKit & Compile
         run: |
           bun x svelte-kit sync
-          # Ensure generated types are fresh
           rm -rf .svelte-kit/types
           bun x svelte-kit sync
-      - name: Compile Paraglide
-        run: bun run paraglide
+          bun run paraglide
+
       - name: Generate Config Stubs
         run: |
           mkdir -p config
-          echo "export const privateEnv: any = {
-            DB_TYPE: process.env.DB_TYPE || '',
-            DB_HOST: process.env.DB_HOST || '127.0.0.1',
-            DB_PORT: process.env.DB_PORT || (process.env.DB_TYPE === 'mongodb' ? '27017' : process.env.DB_TYPE === 'mariadb' ? '3306' : '5432'),
-            DB_NAME: process.env.DB_NAME || 'sveltycms_test',
-            DB_USER: process.env.DB_USER || 'test',
-            DB_PASSWORD: process.env.DB_PASSWORD || 'test'
+          echo "export const privateEnv: any = { 
+            DB_TYPE: process.env.DB_TYPE || '', 
+            DB_HOST: process.env.DB_HOST || '127.0.0.1', 
+            DB_PORT: process.env.DB_PORT || (process.env.DB_TYPE === 'mongodb' ? '27017' : process.env.DB_TYPE === 'mariadb' ? '3306' : '5432'), 
+            DB_NAME: process.env.DB_NAME || 'sveltycms_test', 
+            DB_USER: process.env.DB_USER || 'test', 
+            DB_PASSWORD: process.env.DB_PASSWORD || 'test' 
           }" > config/private.test.ts
+
       - name: Run Linter
         run: bun run lint
+
       - name: Run Type Check
         run: bun run check
+
       - name: Run Unit Tests
         env:
           TEST_MODE: true
           NODE_ENV: test
-        run: bun run test:unit
+        run: bunx vitest run --config vitest.config.ts
+
 
   build:
     name: 🏗️ Production Build
@@ -75,6 +122,8 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.1.29
       - name: Install dependencies
         run: bun install --frozen-lockfile
       - name: Compile Paraglide
@@ -154,6 +203,8 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.1.29
 
       - name: Download Build
         uses: actions/download-artifact@v6
@@ -224,6 +275,8 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.1.29
 
       - name: Download Build
         uses: actions/download-artifact@v6
