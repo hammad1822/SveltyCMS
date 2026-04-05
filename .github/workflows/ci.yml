@@ -226,6 +226,7 @@ jobs:
         env:
           DB_TYPE: ${{ matrix.database }}
           DB_HOST: 127.0.0.1
+          DB_PORT: ${{ matrix.database == 'mongodb' && '27017' || matrix.database == 'mariadb' && '3306' || matrix.database == 'postgresql' && '5432' || '' }}
           DB_NAME: sveltycms_test
           DB_USER: ${{ (matrix.database == 'mariadb' || matrix.database == 'postgresql') && 'test' || '' }}
           DB_PASSWORD: ${{ (matrix.database == 'mariadb' || matrix.database == 'postgresql') && 'test' || '' }}
@@ -299,7 +300,10 @@ jobs:
 
       - name: Install Playwright Browsers
         if: steps.playwright-cache.outputs.cache-hit != 'true'
-        run: bunx playwright install --with-deps chromium
+        run: bunx playwright install chromium
+
+      - name: Install Playwright system dependencies
+        run: bunx playwright install-deps chromium
 
       - name: ⏳ Wait for Services
         run: |
@@ -313,6 +317,7 @@ jobs:
         env:
           DB_TYPE: ${{ matrix.database }}
           DB_HOST: 127.0.0.1
+          DB_PORT: ${{ matrix.database == 'mongodb' && '27017' || matrix.database == 'mariadb' && '3306' || matrix.database == 'postgresql' && '5432' || '' }}
           DB_NAME: sveltycms_test
           DB_USER: ${{ (matrix.database == 'mariadb' || matrix.database == 'postgresql') && 'test' || '' }}
           DB_PASSWORD: ${{ (matrix.database == 'mariadb' || matrix.database == 'postgresql') && 'test' || '' }}
