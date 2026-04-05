@@ -14,20 +14,14 @@ import { describe, expect, it, beforeEach, afterEach } from 'bun:test';
 
 describe('SAML Authentication Service', () => {
 	let originalEnv: any;
-	beforeEach(() => {
+	beforeEach(async () => {
 		originalEnv = { ...(globalThis as any).privateEnv };
-		// Reset Jackson module cache
-		const modPath = require.resolve(process.cwd() + '/src/databases/auth/saml-auth.ts');
-		if (require.cache[modPath]) {
-			delete require.cache[modPath];
-		}
+		// Reset the cached Jackson instance so each test gets a fresh init
+		const samlModule = await import('../../../src/databases/auth/saml-auth');
+		samlModule.resetJackson();
 	});
 	afterEach(() => {
 		(globalThis as any).privateEnv = originalEnv;
-	});
-	beforeEach(() => {
-		// Reset the cached instance so each test gets a fresh Jackson init
-		// by clearing the module-level cache in saml-auth.ts
 	});
 
 	it('should initialize Jackson with correct database connection string derived from config', async () => {

@@ -100,6 +100,12 @@ export async function getJackson(): Promise<any> {
 	}
 }
 
+// Resets the cached Jackson instance (for testing).
+export function resetJackson(): void {
+	jacksonInstance = null;
+	connectionStringCache = '';
+}
+
 // Creates a SAML connection (useful for an admin endpoint or script).
 export async function createSAMLConnection(params: any): Promise<any> {
 	const j = await getJackson();
