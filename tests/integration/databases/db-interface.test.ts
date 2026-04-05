@@ -50,7 +50,6 @@ describe('Database Interface Contract Tests', () => {
 		// Import the REAL adapter implementation directly, bypassing the mocked 'db.ts'
 		const { MongoDBAdapter } = await import('../../../src/databases/mongodb/mongo-db-adapter');
 		// Import utils to get connection string
-		// @ts-expect-error - Ignore missing file during static analysis
 		const { privateEnv } = await import('../../../config/private.test');
 
 		if (!privateEnv?.DB_TYPE) {
@@ -60,8 +59,12 @@ describe('Database Interface Contract Tests', () => {
 
 		db = new MongoDBAdapter();
 
+		const host = privateEnv.DB_HOST || process.env.DB_HOST || '127.0.0.1';
+		const port = privateEnv.DB_PORT || process.env.DB_PORT || '27017';
+		const dbName = privateEnv.DB_NAME || process.env.DB_NAME || 'sveltycms_test';
+
 		// Construct basic connection string for test
-		const connectionString = `mongodb://${privateEnv.DB_HOST}:${privateEnv.DB_PORT}/${privateEnv.DB_NAME}`;
+		const connectionString = `mongodb://${host}:${port}/${dbName}`;
 
 		try {
 			await db.connect(connectionString);
