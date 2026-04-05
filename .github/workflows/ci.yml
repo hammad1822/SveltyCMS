@@ -113,7 +113,7 @@ jobs:
         env:
           TEST_MODE: true
           NODE_ENV: test
-        run: bunx vitest run
+        run: bun test ./tests/unit
 
 
   build:
